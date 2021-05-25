@@ -1,0 +1,14 @@
+package com.luv2code.springboot.thymeleaf.displayemployeesthymeleaf.dao;
+
+import com.luv2code.springboot.thymeleaf.displayemployeesthymeleaf.entity.Employee;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface EmployeeRepository extends JpaRepository<Employee,Integer> {
+    //add a method to sort by the last name
+
+    public List<Employee> findAllByOrderByFirstName();
+
+    public List<Employee> findAllByOrderByLastNameAsc();
+}
