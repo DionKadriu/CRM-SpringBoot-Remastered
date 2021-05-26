@@ -12,37 +12,57 @@ import java.util.Optional;
 @Service
 public class EmployeeServiceImpl implements EmployeeService{
 
-    private EmployeeRepository employeeDAO;
+    private EmployeeRepository employeeRepository;
 
     @Autowired
-    public EmployeeServiceImpl (EmployeeRepository employeeDAO) {
-        this.employeeDAO = employeeDAO;
+    public EmployeeServiceImpl(EmployeeRepository theEmployeeRepository) {
+        employeeRepository = theEmployeeRepository;
     }
 
     @Override
     public List<Employee> findAll() {
-        return employeeDAO.findAllByOrderByFirstName();
+        return employeeRepository.findAllByOrderByFirstName();
     }
 
     @Override
-    public Employee findById(int id) {
-        Optional<Employee> result= employeeDAO.findById(id);
-        if (result.isPresent()){
-            return result.get();
+    public Employee findById(int theId) {
+        Optional<Employee> result = employeeRepository.findById(theId);
+
+        Employee theEmployee = null;
+
+        if (result.isPresent()) {
+            theEmployee = result.get();
         }
-        else{
-            throw new EmployeeNotFound("Not found the employee with id "+ id);
+        else {
+            // we didn't find the employee
+            throw new RuntimeException("Did not find employee id - " + theId);
         }
 
+        return theEmployee;
     }
 
     @Override
     public void save(Employee theEmployee) {
-        employeeDAO.save(theEmployee);
+        employeeRepository.save(theEmployee);
     }
 
     @Override
-    public void deleteById(int id) {
-        employeeDAO.deleteById(id);
+    public void deleteById(int theId) {
+        employeeRepository.deleteById(theId);
+    }
+
+    @Override
+    public List<Employee> searchBy(String theName) {
+
+        List<Employee> results = null;
+
+        if (theName != null && (theName.trim().length() > 0)) {
+            results = employeeRepository.findByFirstNameContainsOrLastNameContainsAllIgnoreCase(theName, theName);
+        }
+        else {
+            results = findAll();
+        }
+
+        return results;
     }
 }
